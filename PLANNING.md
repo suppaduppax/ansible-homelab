@@ -1,4 +1,6 @@
 # Planning
+Documentation for project planning including [folder structure](#folder-structure) and [defining variable](#vars-and-shared_varsshared_vault).
+
 
 Current nodes:
 - michael.home
@@ -55,7 +57,8 @@ Ansible should be able to run plays on 'plex' which can either be in the
 'staging' or 'production' folders inside vcenter
 
 
-## folder structure
+## Folder Structure
+```
 inventory/
   prod/
     group_vars/
@@ -66,25 +69,16 @@ inventory/
   stag/
     group_vars/
       all/
-
+```
 
 # vars and shared_vars/shared_vault
 Each group_vars and host_vars directory can contain one or more of the following:
-```
-  vars.yml
-  vault.yml
-  shared_vars.yml
-  shared_vault.yml
-```
-
 | name | description
 | ---- | -----------
-| shared_vars.yml     | Contains vars specific to that group/host in that particular deployment. For instance, `deployment: prod` is specific to the deployment and can 
-                 be defined inside the `group_vars/all` directory
-| shared_vault.yml    | Similar to vars.yml but is encrypted using ansible-vault
-| vars  | Contains vars that are shared between all deployments. For instance, `vcenter_hostname: photon-machine.home` can be defined inside of it as it
-                 will not change between any deployments. This can defined inside the `group_vars/all` directory
-| vault | Similar to shared_vars but is encrypted using ansible-vault
+| shared_vars.yml     | Contains vars specific to that group/host in that particular deployment. For instance, `deployment: prod` is specific to the deployment and can be defined inside the `group_vars/all` directory |
+| shared_vault.yml    | Similar to vars.yml but is encrypted using ansible-vault |
+| vars  | Contains vars that are shared between all deployments. For instance, `vcenter_hostname: photon-machine.home` can be defined inside of it as it will not change between any deployments. This can defined inside the `group_vars/all` directory |
+| vault | Similar to shared_vars but is encrypted using ansible-vault |
 
 Virtually all vars in group_vars/host_vars should be viewable inside of shared_vars. For instance, if a var called `vcenter_vm_folder` exists and is different
 between deployments, it should be defined inside `shared_vars.yml` and reference a private variable inside vars.yml with the prefix `deployment`.
