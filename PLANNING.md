@@ -1,7 +1,6 @@
 # Planning
 Documentation for project planning including [folder structure](#folder-structure) and [defining variable](#vars-and-shared_varsshared_vault).
 
-
 Current nodes:
 - michael.home
 - chidi.home
@@ -58,6 +57,7 @@ Ansible should be able to run plays on 'plex' which can either be in the
 
 
 ## Folder Structure
+### Inventory
 ```
 inventory/
   prod/
@@ -70,6 +70,58 @@ inventory/
     group_vars/
       all/
 ```
+
+### Playbooks and Roles
+```
+playbooks/
+  production/
+    plex/               <-- playbook organizing directory
+      roles/
+        plex/           <-- role organizing directory
+          install/      <-- actual role. install
+            tasks/
+              main.yml.yml
+      playbook1.yml
+    vmware/
+      vcenter/
+        roles/
+          role1.yml
+          role2.yml
+        playbook1.yml
+        playbook2.yml
+  staging/ 
+    plex/               <-- playbook organizing directory
+      roles/
+        plex/           <-- role organizing directory
+          install/      <-- actual role. install
+            tasks/
+              main.yml.yml
+      playbook1.yml
+    vmware/
+      vcenter/
+        roles/
+          role1.yml
+          role2.yml
+        playbook1.yml
+        playbook2.yml
+
+roles/
+  staging/
+    universal_role1/
+    universal_parent_role2/
+      universal_role2/
+        tasks/
+          main.yml
+  production/
+    universal_role1/
+    universal_parent_role2/
+      universal_role2/
+        tasks/
+          main.yml
+```
+
+ansible.cfg is set up to look up roles in the ./roles folder automatically
+  
 
 # vars and shared_vars/shared_vault
 Each group_vars and host_vars directory can contain one or more of the following:
