@@ -1,0 +1,5 @@
+---
+- hosts: localhost
+  gather_facts: no
+  roles:
+    - role: 'roles/{{ deployment }}/vmware/vcenter/create_vm_from_template'

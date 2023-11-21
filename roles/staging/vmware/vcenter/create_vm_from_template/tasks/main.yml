@@ -1,0 +1,22 @@
+---
+- name: List all Local Content Library
+  vmware.vmware_rest.content_locallibrary_info:
+    vcenter_hostname: "{{ vcenter_hostname }}"
+    vcenter_password: "{{ vcenter_password }}"
+    vcenter_validate_certs: "{{ vcenter_validate_certs }}"
+  register: all_content_libraries
+
+- debug: var=all_content_libraries
+
+- name: Deploy a new VM based on the template
+  tags: never
+  vmware.vmware_rest.vcenter_vmtemplate_libraryitems:
+    name: vm-from-template
+    library: '{{ create_vm_library }}'
+    template_library_item: '{{ m.id }}'
+    placement:
+      cluster: "{{ lookup('vmware.vmware_rest.cluster_moid', '/my_dc/host/my_cluster') }}"
+      folder: "{{ lookup('vmware.vmware_rest.folder_moid', '/my_dc/vm') }}"
+      resource_pool: "{{ lookup('vmware.vmware_rest.resource_pool_moid', '/my_dc/host/my_cluster/Resources') }}"
+    state: deploy
+  register: my_new_vm
