@@ -1,0 +1,4 @@
+- name: Set vars using server config - '{{ server_config_key }}'
+  set_fact:
+    hostname: ''{{ server[server_config_key].hostname }}
+  

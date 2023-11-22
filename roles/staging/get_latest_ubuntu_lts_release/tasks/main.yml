@@ -1,0 +1,57 @@
+---
+- debug:
+    msg:
+      - "ubuntu_releases_list_url: {{ ubuntu_releases_list_url }}"
+      - "ubuntu_cloudimages_url: {{ ubuntu_cloudimages_url }}"
+      - "downloading to: {{ download_dest }}"
+
+- set_fact:
+    ubuntu_latest_lts_version: "{{ lookup('ansible.builtin.url', ubuntu_releases_list_url, split_lines=False) | regex_search(match_lts_release, ignorecase=True) | regex_search(match_release_version) }}"
+  vars:
+    match_lts_release: "ubuntu [0-9.]+ lts"
+    match_release_version: "[0-9]+[.][0-9]+"
+
+- debug:
+    var: ubuntu_latest_lts_version
+
+- set_fact:
+    ubuntu_cloudimages_files_url: "{{ ubuntu_cloudimages_url }}/{{ lookup('ansible.builtin.url', ubuntu_cloudimages_url, split_lines=False) | regex_search(match_version_url, ignorecase=True) | regex_search(match_href_url) | regex_search('[^\"]+') }}current/"
+  vars:
+    match_version_url: 'href=".*ubuntu server {{ ubuntu_latest_lts_version }} lts[^"]+"'
+    match_href_url: '".+"'
+
+- debug:
+    var: ubuntu_cloudimages_files_url
+
+- set_fact:
+    ubuntu_latest_lts_release_url: "{{ ubuntu_cloudimages_files_url }}{{ lookup('ansible.builtin.url', ubuntu_cloudimages_files_url, split_lines=False) | regex_search(match_ova_href, ignorecase=True) | regex_search(match_ova_url_quotes, ignorecase=True) | regex_search(match_ova_url, ignorecase=True) }}"
+  vars:
+    match_ova_href: 'href=".+amd64[.]ova"'
+    match_ova_url_quotes: '".+"'
+    match_ova_url: '[^"]+'
+
+- set_fact:
+    ubuntu_latest_lts_relase_filename: "{{ ubuntu_latest_lts_release_url | basename }}"
+
+- debug:
+    msg: 
+      - "ubuntu_latest_lts_release_url: {{ ubuntu_latest_lts_release_url }}"
+      - "ubuntu_latest_lts_relase_filename: {{ ubuntu_latest_lts_relase_filename }}"
+
+- set_fact:
+    ubuntu_latest_lts_release_checksum: "{{ lookup('ansible.builtin.url', ubuntu_cloudimages_files_url + '/SHA256SUMS', split_lines=False) | regex_search(match_ova_checksum_line) | regex_search(match_ova_checksum_only) }}"
+  vars:
+    match_ova_checksum_line: '.+ova'
+    match_ova_checksum_only: '^[^ ]+'
+
+- debug:
+    var: ubuntu_latest_lts_release_checksum
+
+- name: Download latest Ubuntu LTS release
+  ansible.builtin.get_url:
+    url: "{{ ubuntu_latest_lts_release_url }}"
+    dest: "{{ download_dest }}/{{ ubuntu_latest_lts_relase_filename }}"
+    checksum: "sha256:{{ ubuntu_latest_lts_release_checksum }}"
+    force: no
+#  when: false
+

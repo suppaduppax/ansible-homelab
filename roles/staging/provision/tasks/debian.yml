@@ -1,0 +1,71 @@
+---
+- name: Debian setup
+  become: yes
+  become_method: su
+  vars:
+    ansible_become_pass: "{{ ansible_root_pass }}" 
+
+  block:
+    - name: Update, upgrade apt
+      apt:
+        update_cache: yes
+        upgrade: "yes"
+
+    # install openvm tools
+    - name: Install open vm tools
+      apt:
+        name: open-vm-tools
+        state: latest
+      register: install_open_vm_tools_result
+
+    - name: Reboot the server
+      reboot:    
+      when: install_open_vm_tools_result.changed
+
+    # must add sudo apt to start and then add alvin to it
+    - name: Add sudo apt
+      apt:
+        name: sudo
+        state: present 
+      
+    - name: Add privilaged user '{{ user }}' to sudo group
+      user:
+        name: "{{ user }}"
+        append: yes
+        groups: sudo
+
+#    - name: Set hostname if it is defined
+#      when: hostname is defined
+#      block:          
+#        - name: Set hostname to '{{ hostname }}'
+#          hostname:
+#            name: "{{ hostname }}"
+
+#        - name: Set hosts file to new hostname
+#          template:
+#            src: hosts.j2
+#            dest: /etc/hosts
+
+
+#    - name: Reboot this fucka
+#      become: True
+#      become_method: su
+#      vars:
+#        ansible_become_pass: "{{ ansible_root_pass }}"
+#      reboot:
+#      when: dhcp_add_static_lease_result.changed
+
+#    - name: Set static ip to '{{ ip }}'
+#      template:
+#        src: interfaces-debian.j2
+#        dest: /etc/network/interfaces
+#      vars:
+#        interfaces:
+#          address: "{{ ip }}"
+#          gateway: "{{ gateway }}"
+#          iface: "{{ interface | default(ansible_default_ipv4.interface) }}"
+#          dhcp: "{{ dhcp_enabled }}"
+#      notify: restart network service
+
+#  when: ansible_facts['distribution'] == 'Debian'
+ 

@@ -1,0 +1,4 @@
+---
+ubuntu_releases_list_url: 'https://wiki.ubuntu.com/Releases?action=raw'
+ubuntu_cloudimages_url: 'https://cloud-images.ubuntu.com'
+download_dest: '{{ inventory_dir }}/../../files/downloads'

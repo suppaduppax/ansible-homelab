@@ -1,0 +1,3 @@
+---
+- name: Setup according to OS distribution
+  include_tasks: "provision_os_{{ ansible_facts['distribution'] | lower }}.yml" 

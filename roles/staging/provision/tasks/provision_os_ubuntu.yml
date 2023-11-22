@@ -1,0 +1,29 @@
+# setup the server when it is an Ubuntu OS
+- name: Setup Ubuntu server
+  become: yes
+  block:
+    - name: Update, upgrade apt
+      apt:
+        update_cache: yes
+        upgrade: "yes"
+
+    - name: Set hostname to '{{ hostname }}'
+      hostname:
+        name: "{{ hostname }}"
+
+    - name: Set hosts file to new hostname
+      template:
+        src: hosts.j2
+        dest: /etc/hosts
+
+    - name: Create netplan config
+      template:
+        src: netplan.j2
+        dest: /etc/netplan/00-install-config.yaml
+
+      vars:
+        netplan:
+          ip: "{{ ip }}"
+          interface: "{{ interface }}"
+          getway: "{{ gateway }}"
+          dhcp: "{{ dhcp_enabled }}"

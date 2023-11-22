@@ -1,0 +1,10 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+#  roles:
+#    - role: "{{ deployment }}/get_latest_ubuntu_lts_release"
+  tasks:
+    - include_role:
+        role: "{{ deployment }}/get_latest_ubuntu_lts_release"
+
